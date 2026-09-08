@@ -2,3 +2,7 @@ node_modules/
 dist/
 .netlify/
 .env*
+
+demo/*.mp4
+demo/*.aiff
+demo/import-test.json

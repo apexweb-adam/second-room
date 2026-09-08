@@ -2,6 +2,12 @@
 
 An original furniture reuse planning prototype by Ádám Tokár for NextStep Hacks 2026 / Earth Forward. Built September 8, 2026 with AI-assisted implementation by Codex. See public/about.html for the complete methods, privacy, evidence and limitations.
 
+## Published submission
+
+[Devpost entry](https://devpost.com/software/second-room) · [Live app](https://second-room-adam.netlify.app) · [4:24 walkthrough](https://youtu.be/IoFPm9lvWyo)
+
+Submitted to NextStep Hacks on September 8, 2026; platform confirmation received. Judging is pending. The video uses actual app screenshots and synthetic narration.
+
 ## Run
 
 Node 22.12+: `npm ci`, `npm test`, `npm run dev`. Open http://127.0.0.1:4323. `npm run build` creates the standalone dist site. No credentials or backend required.
