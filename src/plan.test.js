@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {initialPlan,totals,updateItem,suggest,serialize,parsePlan,normalize,report} from './plan.js';
+test('sample costs distinguish planned reuse, repairs and completed outcomes',()=>{assert.deepEqual(totals(initialPlan()),{included:5,reuse:3,repair:1,buy:1,completed:0,baseline:630,planned:210,difference:420});});
+test('completion is self-reported and resets when the decision changes',()=>{let p=updateItem(initialPlan(),'Desk',{completed:true});assert.equal(totals(p).completed,1);p=updateItem(p,'Desk',{action:'Buy new'});assert.equal(totals(p).completed,0);assert.equal(totals(p).planned,335);});
+test('leaving an item out removes both purchase and baseline',()=>{const p=updateItem(initialPlan(),'Floor lamp',{action:'Leave out'});assert.equal(totals(p).included,4);assert.equal(totals(p).planned,35);assert.equal(totals(p).baseline,455);assert.equal(totals(p).difference,420);});
+test('expensive repair is honestly reported as a negative difference',()=>{const p=updateItem(initialPlan(),'Desk',{repair:900});assert.equal(totals(p).difference,-445);});
+test('condition-based suggestions do not invent completed outcomes',()=>{const p=suggest(updateItem(initialPlan(),'Armchair',{completed:true}));assert.equal(p.items.find(i=>i.name==='Floor lamp').action,'Leave out');assert.equal(totals(p).completed,0);});
+test('portable plan round trip retains notes, transforms and completion',()=>{const p=updateItem(initialPlan(),'Desk',{note:'Local repair estimate',x:.4,rotation:45,completed:true});assert.deepEqual(parsePlan(serialize(p)),p);assert.match(report(p),/Local repair estimate/);});
+test('imports reject wrong formats and excessive input, normalize bounds',()=>{assert.throws(()=>parsePlan('{}'));assert.throws(()=>parsePlan(' '.repeat(65537)));const p=normalize({...initialPlan(),items:[{name:'Desk',replacement:-1,repair:Infinity,x:100,rotation:999,action:'Unknown'}]});const d=p.items.find(i=>i.name==='Desk');assert.equal(d.replacement,0);assert.equal(d.repair,0);assert.equal(d.x,.7);assert.equal(d.rotation,180);});
